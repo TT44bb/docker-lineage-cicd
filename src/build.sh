@@ -156,16 +156,16 @@ for branch in $BRANCH_NAME; do
     
     # apply patches for serranoveltexx
     cd "frameworks/base"
-    git am device/samsung/serranovexx-common/patch/framework-base-displaymanagerservice-i9195i.patch
+    git am ../../device/samsung/serranovexx-common/patch/framework-base-displaymanagerservice-i9195i.patch
     cd -
     cd "hardware/qcom/fm"
-    git am device/samsung/serranovexx-common/patch/fm-radio-i9195i.patch
+    git am ../../../device/samsung/serranovexx-common/patch/fm-radio-i9195i.patch
     cd -
     cd "packages/services/Telephony"
-    git am device/samsung/serranovexx-common/patch/mobil-network-settings-i9195.patch
+    git am ../../../device/samsung/serranovexx-common/patch/mobil-network-settings-i9195.patch
     cd -
     cd "packages/services/Telecomm"
-    git am device/samsung/serranovexx-common/patch/service-telecomm-i9195i.patch
+    git am ../../../device/samsung/serranovexx-common/patch/service-telecomm-i9195i.patch
     cd -
     
     # If needed, apply the microG's signature spoofing patch
