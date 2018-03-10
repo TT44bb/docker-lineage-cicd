@@ -19,11 +19,10 @@ docker run \
 -e "INCLUDE_PROPRIETARY=false" \
 -e "CUSTOM_PACKAGES=GmsCore GsfProxy FakeStore FDroid FDroidPrivilegedExtension MozillaNlpBackend NominatimNlpBackend com.google.android.maps.jar" \
 -e "SIGN_BUILDS=true" \
--v "/home/t4b/.ccache:/srv/ccache" \
--v "/home/t4b/android/lineageos/system:/srv/src" \
--v "/home/t4b/android/docker/zips:/srv/zips" \
--v "/home/t4b/android/docker/local_manifests:/srv/local_manifests" \
--v "/home/t4b/android/docker/userscripts:/srv/userscripts" \
--v "/home/t4b/android/docker/keys:/srv/keys" \
--v "/home/t4b/android/docker/logs:/srv/logs" \
+-v "$HOME/.ccache:/srv/ccache" \
+-v "$HOME/android/lineageos:/srv/src" \
+-v "$(pwd)/zips:/srv/zips" \
+-v "$(pwd)/local_manifests:/srv/local_manifests" \
+-v "$(pwd)/keys:/srv/keys" \
+-v "$(pwd)/logs:/srv/logs" \
 $(cat docker-id)
