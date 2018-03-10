@@ -93,10 +93,10 @@ for branch in $BRANCH_NAME; do
     echo ">> [$(date)] Devices: ${!device_list_cur_branch}"
 
     # Remove previous changes of vendor/cm, vendor/lineage and frameworks/base (if they exist)
-    for path in "vendor/cm" "vendor/lineage" "frameworks/base"; do
+    for path in "vendor/cm" "vendor/lineage" "frameworks/base" "hardware/qcom/fm" "packages/services/Telephony" "packages/services/Telecomm"; do
       if [ -d "$path" ]; then
         cd "$path"
-        git reset -q --hard
+        git reset -q --hard github/$branch --
         cd "$SRC_DIR/$branch_dir"
       fi
     done
@@ -153,7 +153,13 @@ for branch in $BRANCH_NAME; do
     los_ver_major=$(sed -n -e 's/^\s*PRODUCT_VERSION_MAJOR = //p' "vendor/$vendor/config/common.mk")
     los_ver_minor=$(sed -n -e 's/^\s*PRODUCT_VERSION_MINOR = //p' "vendor/$vendor/config/common.mk")
     los_ver="$los_ver_major.$los_ver_minor"
-
+    
+    # apply patches for serranoveltexx
+    git am device/samsung/serranovexx-common/patch/framework-base-displaymanagerservice-i9195i.patch
+    git am device/samsung/serranovexx-common/patch/fm-radio-i9195i.patch
+    git am device/samsung/serranovexx-common/patch/mobil-network-settings-i9195.patch
+    git am device/samsung/serranovexx-common/patch/service-telecomm-i9195i.patch
+    
     # If needed, apply the microG's signature spoofing patch
     if [ "$SIGNATURE_SPOOFING" = "yes" ] || [ "$SIGNATURE_SPOOFING" = "restricted" ]; then
       # Determine which patch should be applied to the current Android source tree
