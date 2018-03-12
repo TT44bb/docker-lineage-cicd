@@ -21,6 +21,7 @@ IFS=','
 shopt -s dotglob
 shopt -s extglob
 repo_log="$LOGS_DIR/repo-$(date +%Y%m%d).log"
+patch_log="$LOGS_DIR/patch-$(date +%Y%m%d).log"
 
 # cd to working directory
 cd "$SRC_DIR"
@@ -96,7 +97,8 @@ for branch in $BRANCH_NAME; do
     for path in "vendor/cm" "vendor/lineage" "frameworks/base" "hardware/qcom/fm" "packages/services/Telephony" "packages/services/Telecomm"; do
       if [ -d "$path" ]; then
         cd "$path"
-        git reset -q --hard github/$branch --
+        echo ">> [$(date)] $(pwd):"  &>> "$patch_log"
+        git reset --hard github/$branch -- &>> "$patch_log"
         cd "$SRC_DIR/$branch_dir"
       fi
     done
@@ -156,16 +158,20 @@ for branch in $BRANCH_NAME; do
     
     # apply patches for serranoveltexx
     cd "frameworks/base"
-    git am ../../device/samsung/serranovexx-common/patch/framework-base-displaymanagerservice-i9195i.patch
+    echo ">> [$(date)] $(pwd):"  &>> "$patch_log"
+    git am ../../device/samsung/serranovexx-common/patch/framework-base-displaymanagerservice-i9195i.patch  &>> "$patch_log"
     cd -
     cd "hardware/qcom/fm"
-    git am ../../../device/samsung/serranovexx-common/patch/fm-radio-i9195i.patch
+    echo ">> [$(date)] $(pwd):"  &>> "$patch_log"
+    git am ../../../device/samsung/serranovexx-common/patch/fm-radio-i9195i.patch &>> "$patch_log"
     cd -
     cd "packages/services/Telephony"
-    git am ../../../device/samsung/serranovexx-common/patch/mobil-network-settings-i9195.patch
+    echo ">> [$(date)] $(pwd):"  &>> "$patch_log"
+    git am ../../../device/samsung/serranovexx-common/patch/mobil-network-settings-i9195.patch &>> "$patch_log"
     cd -
     cd "packages/services/Telecomm"
-    git am ../../../device/samsung/serranovexx-common/patch/service-telecomm-i9195i.patch
+    echo ">> [$(date)] $(pwd):"  &>> "$patch_log"
+    git am ../../../device/samsung/serranovexx-common/patch/service-telecomm-i9195i.patch &>> "$patch_log"
     cd -
     
     # If needed, apply the microG's signature spoofing patch
@@ -183,17 +189,17 @@ for branch in $BRANCH_NAME; do
       if ! [ -z $patch_name ]; then
         cd frameworks/base
         if [ "$SIGNATURE_SPOOFING" = "yes" ]; then
-          echo ">> [$(date)] Applying the standard signature spoofing patch ($patch_name) to frameworks/base"
-          echo ">> [$(date)] WARNING: the standard signature spoofing patch introduces a security threat"
-          patch --quiet -p1 -i "/root/signature_spoofing_patches/$patch_name"
+          echo ">> [$(date)] Applying the standard signature spoofing patch ($patch_name) to frameworks/base" | tee -a "$patch_log"
+          echo ">> [$(date)] WARNING: the standard signature spoofing patch introduces a security threat" | tee -a "$patch_log"
+          patch -p1 -i "/root/signature_spoofing_patches/$patch_name" 2>&1 | tee -a "$patch_log"
         else
-          echo ">> [$(date)] Applying the restricted signature spoofing patch (based on $patch_name) to frameworks/base"
-          sed 's/android:protectionLevel="dangerous"/android:protectionLevel="signature|privileged"/' "/root/signature_spoofing_patches/$patch_name" | patch --quiet -p1
+          echo ">> [$(date)] Applying the restricted signature spoofing patch (based on $patch_name) to frameworks/base" | tee -a "$patch_log"
+          sed 's/android:protectionLevel="dangerous"/android:protectionLevel="signature|privileged"/' "/root/signature_spoofing_patches/$patch_name" | patch -p1 2>&1 | tee -a "$patch_log"
         fi
         git clean -q -f
         cd ../..
       else
-        echo ">> [$(date)] ERROR: can't find a suitable signature spoofing patch for the current Android version ($android_version)"
+        echo ">> [$(date)] ERROR: can't find a suitable signature spoofing patch for the current Android version ($android_version)" | tee -a "$patch_log"
         exit 1
       fi
     fi
